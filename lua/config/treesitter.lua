@@ -1,13 +1,25 @@
-local vscode = vim.fn.exists('g:vscode') == 1
+local vscode = vim.fn.exists "g:vscode" == 1
 
-require'nvim-treesitter.configs'.setup {
-    ensure_installed = {'rust', 'python', 'lua', 'vim', 'html', 'css', 'scss', 'javascript', 'typescript', 'toml', 'yaml'},
+require("nvim-treesitter.configs").setup {
+    ensure_installed = {
+        "rust",
+        "python",
+        "lua",
+        "vim",
+        "html",
+        "css",
+        "scss",
+        "javascript",
+        "typescript",
+        "toml",
+        "yaml",
+    },
     highlight = {
         enable = not vscode,
         additional_vim_regex_highlighting = vscode,
     },
     indent = {
-        enable = not vscode
+        enable = not vscode,
     },
     textobjects = {
         select = {

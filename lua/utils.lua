@@ -11,9 +11,9 @@ end
 
 function M.next_normal_window()
     repeat
-        vim.cmd('normal! ')
-    until vim.bo.buftype == ''
-    vim.cmd('stopinsert')
+        vim.cmd "normal! "
+    until vim.bo.buftype == ""
+    vim.cmd "stopinsert"
 end
 
 return M
