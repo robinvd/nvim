@@ -28,7 +28,12 @@ wk.register({
         q = { "<cmd>xa<cr>", "quit" },
         w = { "<cmd>wa<cr>", "write all" },
     },
-    p = { "<cmd>Telescope find_files<cr>", "Telescope files" },
+    p = {
+        function()
+            require("telescope.builtin").find_files { find_command = { "rg", "--files", "--hidden", "--glob", "!.git" } }
+        end,
+        "Telescope files",
+    },
     f = { "<cmd>NvimTreeToggle<CR>", "file tree" },
     t = {
         name = "tabs", -- optional group name
