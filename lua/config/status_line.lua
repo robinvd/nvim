@@ -29,7 +29,7 @@ components.active[1] = {
     {
         provider = function(component)
             local filename = api.nvim_buf_get_name(0)
-            local filename = fn.fnamemodify(filename, ":~:.")
+            filename = fn.fnamemodify(filename, ":~:.")
             local extension = fn.fnamemodify(filename, ":e")
             local readonly_str, modified_str
 
@@ -197,7 +197,7 @@ components.inactive[1] = {
     {},
 }
 
-M = {}
+local M = {}
 M.setup = function()
     require("feline").setup {
         components = components,
