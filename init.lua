@@ -31,6 +31,7 @@ vim.cmd [[
     set nowrap
     set cmdheight=1
     set updatetime=300
+    set scrolloff=3
     set shortmess+=c
     set completeopt=menu,menuone,noselect
     set sessionoptions+=winpos,terminal
@@ -195,7 +196,23 @@ return require("packer").startup(function(raw_use)
             }
         end,
     }
-    term_use { "sindrets/diffview.nvim", requires = "nvim-lua/plenary.nvim" }
+    term_use {
+        "sindrets/diffview.nvim",
+        requires = "nvim-lua/plenary.nvim",
+        config = function()
+            require("diffview").setup {
+                key_bindings = {
+                    view = {
+                        q = "<cmd>tabclose<cr>",
+                    },
+                    file_panel = {
+                        q = "<cmd>tabclose<cr>",
+                        c = "<cmd>Neogit kind=split_above<cr>",
+                    },
+                },
+            }
+        end,
+    }
     term_use {
         "TimUntersberger/neogit",
         requires = "nvim-lua/plenary.nvim",
