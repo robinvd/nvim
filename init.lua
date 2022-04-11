@@ -8,7 +8,7 @@ end
 vim.cmd [[
     augroup packer_user_config
     autocmd!
-    autocmd BufWritePost init.lua source <afile> | PackerCompile
+    " autocmd BufWritePost init.lua source <afile> | PackerCompile
     augroup end
 
     set undofile
@@ -25,6 +25,7 @@ vim.cmd [[
     set expandtab
     set number
     set termguicolors
+    colorscheme nightfox
     set hidden
     set splitright
     set splitbelow
@@ -111,6 +112,12 @@ return require("packer").startup(function(raw_use)
     -- treesitter
     --   https://github.com/vigoux/architext.nvim
     --   https://github.com/mfussenegger/nvim-treehopper
+    --
+    -- https://github.com/Tastyep/structlog.nvim
+    -- ? https://github.com/ahmedkhalf/project.nvim
+    -- https://github.com/williamboman/nvim-lsp-installer
+    -- https://github.com/windwp/nvim-autopairs
+    -- https://www.lunarvim.org/
 
     use {
         "nvim-treesitter/nvim-treesitter",
@@ -176,6 +183,11 @@ return require("packer").startup(function(raw_use)
     --     require('nvim-autopairs').setup{}
     --     require 'cmp'.event:on('confirm_done', require 'nvim-autopairs.completion.cmp'.on_confirm_done({  map_char = { tex = '' } }))
     -- end}
+    use {
+        "rcarriga/vim-ultest",
+        requires = {"vim-test/vim-test"},
+        run = ":UpdateRemotePlugins",
+    }
 
     term_use {
         "norcalli/nvim-terminal.lua",
@@ -235,6 +247,34 @@ return require("packer").startup(function(raw_use)
                 -- refer to the configuration section below
             }
             require "config.keys"
+        end,
+    }
+    term_use {
+        "~/prog/hobby/sessions.nvim",
+        config = function()
+            local utils = require "utils"
+
+            require("sessions").setup {
+                session_filepath = function()
+                    local filename = utils.escaped_session_name_from_cwd()
+                    vim.notify("session filename " .. filename)
+                    local path = vim.fn.stdpath "data" .. "/sessions.nvim/" .. filename
+                    vim.notify("session path " .. path)
+                    return path
+                end,
+            }
+        end,
+    }
+    term_use {
+        "natecraddock/workspaces.nvim",
+        requires = { "nvim-telescope/telescope.nvim", "sessions.nvim" },
+        config = function()
+            require("telescope").load_extension "workspaces"
+            require("workspaces").setup {
+                open = function()
+                    require("sessions").load(nil, { silent = false })
+                end,
+            }
         end,
     }
     term_use {
@@ -331,9 +371,10 @@ return require("packer").startup(function(raw_use)
             vim.g.solarized_contrast = true
             vim.g.solarized_borders = false
             vim.g.solarized_disable_background = false
-            require("solarized").set()
+            -- require("solarized").set()
         end,
     }
+    use "EdenEast/nightfox.nvim"
     -- makes prompt etc better
     -- example: vim.ui.select({ "Yes", "No" }, { prompt = '' }, function(choice) end)
     term_use "stevearc/dressing.nvim"
@@ -354,8 +395,13 @@ return require("packer").startup(function(raw_use)
         "kyazdani42/nvim-tree.lua",
         requires = { "kyazdani42/nvim-web-devicons" },
         config = function()
-            vim.g.nvim_tree_quit_on_open = 1
-            require("nvim-tree").setup { auto_close = true, update_focused_file = { enable = true } }
+            require("nvim-tree").setup {
+                auto_close = true,
+                update_focused_file = { enable = true },
+                actions = {
+                    quit_on_open = true,
+                },
+            }
         end,
     }
 end)

@@ -22,6 +22,17 @@ require("nvim-treesitter.configs").setup {
         enable = not vscode,
     },
     textobjects = {
+        swap = {
+            enable = true,
+            swap_next = {
+                swap_next = {
+                    ["<leader>a"] = "@parameter.inner",
+                },
+                swap_previous = {
+                    ["<leader>A"] = "@parameter.inner",
+                },
+            }
+        },
         select = {
             enable = true,
             lookahead = true,

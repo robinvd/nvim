@@ -68,6 +68,10 @@ wk.register({
         w = { "<cmd>Telescope lsp_workspace_symbols<cr>", "workspace symbols" },
         W = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "workspace symbols" },
     },
+    u = {
+        name = "unittest",
+        t = { "<cmd>TestNearest<cw>" }
+    },
     x = {
         name = "fix",
         n = { "<cmd>cnext<cr>" },
@@ -83,6 +87,8 @@ map("n", "<C-Left>", [[<C-W>h]], opts)
 map("n", "<C-Down>", [[<C-W>j]], opts)
 map("n", "<C-Up>", [[<C-W>k]], opts)
 map("n", "<C-Right>", [[<C-W>l]], opts)
+
+map("n", "gp", "`[v`]", opts)
 
 local function set_term_keys(term)
     buf_map(term.bufnr, "t", "<C-Left>", [[<C-\><C-n><C-W>h]], opts)
