@@ -3,6 +3,8 @@ local fn = vim.fn
 local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
     fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path }
+    print('packer installed; please restart nvim')
+    return
 end
 
 vim.cmd [[
@@ -25,6 +27,7 @@ vim.cmd [[
     set expandtab
     set number
     set termguicolors
+    set title
     colorscheme nightfox
     set hidden
     set splitright
@@ -94,6 +97,7 @@ return require("packer").startup(function(raw_use)
     use "D4KU/vim-textobj-chainmember"
     -- av/iv
     use "Julian/vim-textobj-variable-segment"
+    use "nishigori/increment-activator"
 
     use {
         "ruifm/gitlinker.nvim",
@@ -129,6 +133,13 @@ return require("packer").startup(function(raw_use)
         config = function()
             require("neogen").setup {
                 enabled = true,
+                languages = {
+                    python = {
+                        template = {
+                            annotation_convention = "reST",
+                        }
+                    }
+                },
             }
         end,
         requires = "nvim-treesitter/nvim-treesitter",
@@ -335,7 +346,7 @@ return require("packer").startup(function(raw_use)
         config = function()
             local null_ls = require "null-ls"
             null_ls.setup {
-                debug = true,
+                debug = false,
                 sources = {
                     null_ls.builtins.formatting.stylua,
                     null_ls.builtins.diagnostics.selene,
@@ -361,19 +372,19 @@ return require("packer").startup(function(raw_use)
             }
         end,
     }
-    term_use {
-        "shaunsingh/solarized.nvim",
-        config = function()
-            vim.g.solarized_italic_comments = true
-            vim.g.solarized_italic_keywords = false
-            vim.g.solarized_italic_functions = false
-            vim.g.solarized_italic_variables = false
-            vim.g.solarized_contrast = true
-            vim.g.solarized_borders = false
-            vim.g.solarized_disable_background = false
-            -- require("solarized").set()
-        end,
-    }
+    -- term_use {
+    --     "shaunsingh/solarized.nvim",
+    --     config = function()
+    --         vim.g.solarized_italic_comments = true
+    --         vim.g.solarized_italic_keywords = false
+    --         vim.g.solarized_italic_functions = false
+    --         vim.g.solarized_italic_variables = false
+    --         vim.g.solarized_contrast = true
+    --         vim.g.solarized_borders = false
+    --         vim.g.solarized_disable_background = false
+    --         -- require("solarized").set()
+    --     end,
+    -- }
     use "EdenEast/nightfox.nvim"
     -- makes prompt etc better
     -- example: vim.ui.select({ "Yes", "No" }, { prompt = '' }, function(choice) end)
@@ -385,10 +396,10 @@ return require("packer").startup(function(raw_use)
         config = function()
             require("toggleterm").setup {
                 open_mapping = nil,
-                shading_factor = 3,
-                shade_terminals = true,
+                -- shading_factor = 3,
+                -- shade_terminals = true,
             }
-            vim.cmd "highlight DarkenedPanel guibg=#eee8d5"
+            -- vim.cmd "highlight DarkenedPanel guibg=#eee8d5"
         end,
     }
     term_use {
@@ -396,7 +407,6 @@ return require("packer").startup(function(raw_use)
         requires = { "kyazdani42/nvim-web-devicons" },
         config = function()
             require("nvim-tree").setup {
-                auto_close = true,
                 update_focused_file = { enable = true },
                 actions = {
                     quit_on_open = true,
