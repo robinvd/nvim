@@ -12,8 +12,7 @@ wk.register({
     c = {
         name = "commands/terminal",
         c = { "<cmd>ToggleTermToggleAll<CR>", "open close all" },
-        b = { "<cmd>lua _bottom_term:toggle()<CR>", "toggle/close term" },
-        f = { "<cmd>lua _float_term:toggle()<CR>", "toggle/close term" },
+        n = { "<cmd>ToggleTerm<CR>", "add terminal" },
         q = {
             function()
                 for _, term in ipairs(toggleterm.get_all(true)) do
@@ -44,6 +43,7 @@ wk.register({
     },
     T = {
         name = "Telescope",
+        g = { "<cmd>Telescope live_grep<cr>", "Telescope live_grep" },
         n = { "<cmd>Telescope notify<cr>", "Telescope notify" },
         s = { "<cmd>Telescope session-lens search_session<cr>", "Telescope session" },
     },
@@ -79,9 +79,8 @@ wk.register({
     },
 }, { prefix = "<leader>" })
 
-map("n", "<A-i>", '<CMD>lua require("FTerm").toggle()<CR>', opts)
-map("t", "<A-i>", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>', opts)
-map("n", "<A-r>", '<CMD>lua require("FTerm").run("!!")<CR>', opts)
+map("n", "<A-t>", "<CMD>exe v:count1 . 'ToggleTerm'<CR>", opts)
+map("t", "<A-t>", '<C-\\><C-n><CMD>ToggleTerm<CR>', opts)
 
 map("n", "<C-Left>", [[<C-W>h]], opts)
 map("n", "<C-Down>", [[<C-W>j]], opts)
@@ -90,30 +89,12 @@ map("n", "<C-Right>", [[<C-W>l]], opts)
 
 map("n", "gp", "`[v`]", opts)
 
-local function set_term_keys(term)
-    buf_map(term.bufnr, "t", "<C-Left>", [[<C-\><C-n><C-W>h]], opts)
-    buf_map(term.bufnr, "t", "<C-Down>", [[<C-\><C-n><C-W>j]], opts)
-    buf_map(term.bufnr, "t", "<C-Up>", [[<C-\><C-n><C-W>k]], opts)
-    buf_map(term.bufnr, "t", "<C-Right>", [[<C-\><C-n><C-W>l]], opts)
-end
-
-_float_term = Terminal:new {
-    direction = "float",
-    on_open = function(term)
-        buf_map(term.bufnr, "t", "<C-/>", "<cmd>close<CR>", opts)
-        buf_map(term.bufnr, "n", "<C-/>", "<cmd>close<CR>", opts)
-    end,
-}
-_bottom_term = Terminal:new {
-    direction = "horizontal",
-    on_open = set_term_keys,
-}
-map("n", "<C-/>", "<cmd>ToggleTermToggleAll<CR>", opts)
-map("t", "<C-/>", "<cmd>ToggleTermToggleAll<CR>", opts)
+map("t", "<C-Left>", [[<C-\><C-n><C-W>h]], opts)
+map("t", "<C-Down>", [[<C-\><C-n><C-W>j]], opts)
+map("t", "<C-Up>", [[<C-\><C-n><C-W>k]], opts)
+map("t", "<C-Right>", [[<C-\><C-n><C-W>l]], opts)
 
 map("n", "<C-w><C-w>", "<cmd>lua require 'utils'.next_normal_window()<cr>", opts)
-
-map("n", "<C-p>", '"+p', opts)
 
 -- Navigation
 map("n", "]c", "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
@@ -124,3 +105,7 @@ map("n", "[t", "<cmd>lua require('trouble').previous({skip_groups = true, jump =
 -- Text object
 map("o", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
 map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
+
+-- TODO make textobject
+map("n", "<C-p>", '"+p', opts)
+
