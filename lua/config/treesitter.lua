@@ -1,5 +1,3 @@
-local vscode = vim.fn.exists "g:vscode" == 1
-
 require("nvim-treesitter.configs").setup {
     ensure_installed = {
         "rust",
@@ -13,13 +11,14 @@ require("nvim-treesitter.configs").setup {
         "typescript",
         "toml",
         "yaml",
+        "markdown",
     },
     highlight = {
-        enable = not vscode,
-        additional_vim_regex_highlighting = vscode,
+        enable = true,
+        additional_vim_regex_highlighting = false,
     },
     indent = {
-        enable = not vscode,
+        enable = true,
     },
     textobjects = {
         swap = {
@@ -45,7 +44,16 @@ require("nvim-treesitter.configs").setup {
             },
         },
     },
-    -- refactor = {
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "gnn",
+            node_incremental = "<a-e>",
+            node_decremental = "<a-i>",
+            scope_incremental = "grc",
+        },
+    },
+        -- refactor = {
     --     highlight_definitions = { enable = not vscode },
     --     highlight_current_scope = { enable = false },
     --     smart_rename = {
