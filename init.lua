@@ -47,7 +47,7 @@ vim.cmd [[
 ]]
 
 return require("packer").startup(function(raw_use)
-    function use(config)
+    local function use(config)
         if type(config) ~= "table" then
             config = { config }
         end
@@ -58,13 +58,7 @@ return require("packer").startup(function(raw_use)
         raw_use(config)
     end
 
-    function term_use(config)
-        -- if type(config) ~= 'table' then
-        --     config = {config}
-        -- end
-        -- config['disabled'] = vscode
-        use(config)
-    end
+    local term_use = use
 
     -- example plugins: https://github.com/tjdevries/config_manager/blob/master/xdg_config/nvim/lua/tj/plugins.lua
 
@@ -81,8 +75,6 @@ return require("packer").startup(function(raw_use)
     }
 
     use "editorconfig/editorconfig-vim"
-    -- use {'easymotion/vim-easymotion', cond = not vscode}
-    -- use {'asvetliakov/vim-easymotion', cond = vscode, as = 'vsc-easymotion'}
     use "tpope/vim-repeat"
     use "tpope/vim-surround"
     use "michaeljsmith/vim-indent-object"
@@ -261,34 +253,6 @@ return require("packer").startup(function(raw_use)
         end,
     }
     term_use {
-        "~/prog/hobby/sessions.nvim",
-        config = function()
-            local utils = require "utils"
-
-            require("sessions").setup {
-                session_filepath = function()
-                    local filename = utils.escaped_session_name_from_cwd()
-                    vim.notify("session filename " .. filename)
-                    local path = vim.fn.stdpath "data" .. "/sessions.nvim/" .. filename
-                    vim.notify("session path " .. path)
-                    return path
-                end,
-            }
-        end,
-    }
-    term_use {
-        "natecraddock/workspaces.nvim",
-        requires = { "nvim-telescope/telescope.nvim", "sessions.nvim" },
-        config = function()
-            require("telescope").load_extension "workspaces"
-            require("workspaces").setup {
-                open = function()
-                    require("sessions").load(nil, { silent = false })
-                end,
-            }
-        end,
-    }
-    term_use {
         "lukas-reineke/indent-blankline.nvim",
         config = function()
             require("indent_blankline").setup {
@@ -390,7 +354,6 @@ return require("packer").startup(function(raw_use)
     -- example: vim.ui.select({ "Yes", "No" }, { prompt = '' }, function(choice) end)
     term_use "stevearc/dressing.nvim"
     -- term_use {'karb94/neoscroll.nvim', config = function() require('neoscroll').setup() end}
-    term_use { "numToStr/FTerm.nvim" }
     term_use {
         "akinsho/toggleterm.nvim",
         config = function()
@@ -409,7 +372,7 @@ return require("packer").startup(function(raw_use)
             require("nvim-tree").setup {
                 update_focused_file = { enable = true },
                 actions = {
-                    quit_on_open = true,
+                    -- quit_on_open = true,
                 },
             }
         end,
