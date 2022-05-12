@@ -3,7 +3,7 @@ local fn = vim.fn
 local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
     fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path }
-    print('packer installed; please restart nvim')
+    print "packer installed; please restart nvim"
     return
 end
 
@@ -63,7 +63,6 @@ return require("packer").startup(function(raw_use)
     -- example plugins: https://github.com/tjdevries/config_manager/blob/master/xdg_config/nvim/lua/tj/plugins.lua
 
     use "wbthomason/packer.nvim"
-    use "9mm/vim-closer"
     use "nathom/filetype.nvim"
     use "andymass/vim-matchup"
     -- term_use {"kevinhwang91/nvim-hlslens"}
@@ -102,6 +101,37 @@ return require("packer").startup(function(raw_use)
             }
         end,
     }
+    use {
+        "echasnovski/mini.nvim",
+        branch = "stable",
+        config = function()
+            -- todo? mini.fuzzy, mini.surround
+            require("mini.pairs").setup {}
+            -- require("mini.sessions").setup {
+            --     autoread = true,
+            -- }
+            require("mini.starter").setup {}
+            -- todo mini.statusline   
+            require("mini.trailspace").setup {}
+        end,
+    }
+    use {
+        'gelguy/wilder.nvim',
+        config = function()
+            require('wilder').setup{modes = {':', '/', '?'}}
+        end,
+    }
+    use {
+        "AckslD/nvim-neoclip.lua",
+        requires = {
+            {'tami5/sqlite.lua', module = 'sqlite'},
+            {'nvim-telescope/telescope.nvim'},
+        },
+        config = function()
+            require('neoclip').setup()
+            require('telescope').load_extension('neoclip')
+        end,
+    }
 
     -- TODO
     -- https://github.com/folke/twilight.nvim
@@ -129,8 +159,8 @@ return require("packer").startup(function(raw_use)
                     python = {
                         template = {
                             annotation_convention = "reST",
-                        }
-                    }
+                        },
+                    },
                 },
             }
         end,
@@ -188,7 +218,7 @@ return require("packer").startup(function(raw_use)
     -- end}
     use {
         "rcarriga/vim-ultest",
-        requires = {"vim-test/vim-test"},
+        requires = { "vim-test/vim-test" },
         run = ":UpdateRemotePlugins",
     }
 
@@ -302,6 +332,7 @@ return require("packer").startup(function(raw_use)
             }
         end,
     }
+    use 'ilAYAli/scMRU.nvim'
     term_use {
         "folke/trouble.nvim",
         requires = "kyazdani42/nvim-web-devicons",

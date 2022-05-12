@@ -43,9 +43,9 @@ wk.register({
     },
     T = {
         name = "Telescope",
-        g = { "<cmd>Telescope live_grep<cr>", "Telescope live_grep" },
-        n = { "<cmd>Telescope notify<cr>", "Telescope notify" },
-        s = { "<cmd>Telescope session-lens search_session<cr>", "Telescope session" },
+        g = { "<cmd>Telescope live_grep<cr>", "live_grep" },
+        c = { "<cmd>Telescope neoclip<cr>", "neoclip" },
+        n = { "<cmd>Telescope notify<cr>", "notify" },
     },
     g = {
         name = "git",
@@ -65,8 +65,7 @@ wk.register({
         name = "lsp",
         R = { "<cmd>Telescope lsp_references<cr>", "references" },
         d = { "<cmd>Telescope lsp_document_symbols<cr>", "workspace symbols" },
-        w = { "<cmd>Telescope lsp_workspace_symbols<cr>", "workspace symbols" },
-        W = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "workspace symbols" },
+        w = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "workspace symbols" },
     },
     u = {
         name = "unittest",
