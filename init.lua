@@ -216,6 +216,11 @@ return require("packer").startup(function(raw_use)
         requires = "nvim-lua/plenary.nvim",
         config = function()
             require("diffview").setup {
+                hooks = {
+                    diff_buf_read = function(_bufnr)
+                        vim.cmd("norm! zRgg]c") -- Set cursor on the first hunk
+                    end,
+                },
                 key_bindings = {
                     view = {
                         q = "<cmd>tabclose<cr>",
