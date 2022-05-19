@@ -56,6 +56,7 @@ local servers = {
     -- 'pyright',
     -- 'rust_analyzer',
     -- 'tsserver',
+    'gopls'
 }
 
 local configs = require "lspconfig/configs"

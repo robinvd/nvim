@@ -29,10 +29,14 @@ wk.register({
     },
     p = {
         function()
-            require("telescope.builtin").find_files { find_command = { "rg", "--files", "--hidden", "--glob", "!.git" } }
+            require("telescope.builtin").find_files {
+                sorter = require 'vscode-files'.get_frecency_sorter(),
+                find_command = { "rg", "--files", "--hidden", "--glob", "!.git" }
+            }
         end,
         "Telescope files",
     },
+    P = {"<cmd>Mru<cr>", "mru files"},
     f = { "<cmd>NvimTreeToggle<CR>", "file tree" },
     t = {
         name = "tabs", -- optional group name
@@ -63,6 +67,7 @@ wk.register({
     },
     l = {
         name = "lsp",
+        s = { "<cmd>lua require('tsht').nodes()<cr>", "select node" },
         R = { "<cmd>Telescope lsp_references<cr>", "references" },
         d = { "<cmd>Telescope lsp_document_symbols<cr>", "workspace symbols" },
         w = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "workspace symbols" },
@@ -104,6 +109,8 @@ map("n", "[t", "<cmd>lua require('trouble').previous({skip_groups = true, jump =
 -- Text object
 map("o", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
 map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
+map("o", "m", ":<C-U>lua require('tsht').nodes()<CR>", opts)
+map("v", "m", ":lua require('tsht').nodes()<CR>", opts)
 
 -- TODO make textobject
 map("n", "<C-p>", '"+p', opts)

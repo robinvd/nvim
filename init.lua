@@ -7,6 +7,21 @@ if fn.empty(fn.glob(install_path)) > 0 then
     return
 end
 
+local status, err = pcall(function()
+    local fennel = require "aniseed.deps.fennel"
+    table.insert(package.loaders, fennel.searcher)
+    fennel.path = fennel.path
+        .. ";"
+        .. fn.stdpath "config"
+        .. "/fnl/?.fnl"
+        .. ";"
+        .. fn.stdpath "config"
+        .. "/fnl/?/init.fnl"
+end)
+if not status then
+    print("could not install fennel", status, err)
+end
+
 vim.cmd [[
     augroup packer_user_config
     autocmd!
@@ -47,6 +62,8 @@ vim.cmd [[
 ]]
 
 return require("packer").startup(function(raw_use)
+    -- local use_rocks = require "packer".use_rocks
+    -- use_rocks "fennel"
     local function use(config)
         if type(config) ~= "table" then
             config = { config }
@@ -63,6 +80,7 @@ return require("packer").startup(function(raw_use)
     -- example plugins: https://github.com/tjdevries/config_manager/blob/master/xdg_config/nvim/lua/tj/plugins.lua
 
     use "wbthomason/packer.nvim"
+    use "Olical/aniseed"
     use "nathom/filetype.nvim"
     use "andymass/vim-matchup"
     -- term_use {"kevinhwang91/nvim-hlslens"}
@@ -110,26 +128,26 @@ return require("packer").startup(function(raw_use)
             -- require("mini.sessions").setup {
             --     autoread = true,
             -- }
-            require("mini.starter").setup {}
-            -- todo mini.statusline   
+            -- require("mini.starter").setup {}
+            -- todo mini.statusline
             require("mini.trailspace").setup {}
         end,
     }
     use {
-        'gelguy/wilder.nvim',
+        "gelguy/wilder.nvim",
         config = function()
-            require('wilder').setup{modes = {':', '/', '?'}}
+            require("wilder").setup { modes = { ":", "/", "?" } }
         end,
     }
     use {
         "AckslD/nvim-neoclip.lua",
         requires = {
-            {'tami5/sqlite.lua', module = 'sqlite'},
-            {'nvim-telescope/telescope.nvim'},
+            { "tami5/sqlite.lua", module = "sqlite" },
+            { "nvim-telescope/telescope.nvim" },
         },
         config = function()
-            require('neoclip').setup()
-            require('telescope').load_extension('neoclip')
+            require("neoclip").setup()
+            require("telescope").load_extension "neoclip"
         end,
     }
 
@@ -150,6 +168,7 @@ return require("packer").startup(function(raw_use)
         run = ":TSUpdate",
         config_mod = "config.treesitter",
     }
+    use "mfussenegger/nvim-ts-hint-textobject"
     use {
         "danymat/neogen",
         config = function()
@@ -197,6 +216,14 @@ return require("packer").startup(function(raw_use)
                 tools = {
                     on_attach = require("config.lsp").on_attach,
                 },
+            }
+        end,
+    }
+    use {
+        "crispgm/nvim-go",
+        config = function()
+            require("go").setup {
+                notify = true,
             }
         end,
     }
@@ -248,7 +275,7 @@ return require("packer").startup(function(raw_use)
             require("diffview").setup {
                 hooks = {
                     diff_buf_read = function(_bufnr)
-                        vim.cmd("norm! zRgg]c") -- Set cursor on the first hunk
+                        vim.cmd "norm! zRgg]c" -- Set cursor on the first hunk
                     end,
                 },
                 key_bindings = {
@@ -329,10 +356,23 @@ return require("packer").startup(function(raw_use)
                         n = { ["<c-t>"] = trouble.open_with_trouble },
                     },
                 },
+                extensions = {
+                    frecency = {
+                        -- default_workspace = "CWD"
+                    },
+                },
             }
         end,
     }
-    use 'ilAYAli/scMRU.nvim'
+    -- use "ilAYAli/scMRU.nvim"
+    use {
+        "nvim-telescope/telescope-frecency.nvim",
+        config = function()
+            require("telescope").load_extension "frecency"
+        end,
+        requires = { "tami5/sqlite.lua" },
+    }
+
     term_use {
         "folke/trouble.nvim",
         requires = "kyazdani42/nvim-web-devicons",
@@ -369,6 +409,36 @@ return require("packer").startup(function(raw_use)
             vim.notify = require "notify"
             vim.notify.setup {
                 -- render="minimal",
+            }
+        end,
+    }
+    use {
+        "NTBBloodbath/rest.nvim",
+        requires = { "nvim-lua/plenary.nvim" },
+        config = function()
+            require("rest-nvim").setup {
+                -- Open request results in a horizontal split
+                result_split_horizontal = false,
+                -- Keep the http file buffer above|left when split horizontal|vertical
+                result_split_in_place = false,
+                -- Skip SSL verification, useful for unknown certificates
+                skip_ssl_verification = false,
+                -- Highlight request on run
+                highlight = {
+                    enabled = true,
+                    timeout = 150,
+                },
+                result = {
+                    -- toggle showing URL, HTTP info, headers at top the of result window
+                    show_url = true,
+                    show_http_info = true,
+                    show_headers = true,
+                },
+                -- Jump to request line on run
+                jump_to_request = false,
+                env_file = ".env",
+                custom_dynamic_variables = {},
+                yank_dry_run = true,
             }
         end,
     }
