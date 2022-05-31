@@ -352,7 +352,7 @@ return require("packer").startup(function(raw_use)
             require("telescope").setup {
                 defaults = {
                     mappings = {
-                        i = { ["<c-t>"] = trouble.open_with_trouble },
+                        i = { ["<c-t>"] = trouble.open_with_trouble, ["<C-h>"] = "which_key" },
                         n = { ["<c-t>"] = trouble.open_with_trouble },
                     },
                 },
@@ -371,6 +371,11 @@ return require("packer").startup(function(raw_use)
             require("telescope").load_extension "frecency"
         end,
         requires = { "tami5/sqlite.lua" },
+    }
+    use{ "natecraddock/telescope-zf-native.nvim", 
+        config = function()
+            require("telescope").load_extension("zf-native")
+        end
     }
 
     term_use {

@@ -1,11 +1,8 @@
 local wk = require "which-key"
 local gs = require "gitsigns"
 local map = vim.api.nvim_set_keymap
-local buf_map = vim.api.nvim_buf_set_keymap
 local opts = { noremap = true, silent = true }
 local toggleterm = require "toggleterm.terminal"
-local Terminal = toggleterm.Terminal
-local utils = require "utils"
 
 wk.register({
     ["<space>"] = { "<cmd>Telescope find_files<cr>", "Telescope files" },
@@ -21,6 +18,7 @@ wk.register({
             end,
             "quit all terms",
         },
+        r = {'nmap <leader>cr :wa <bar> TermExec cmd="!!" go_back=0<cr', "save all files and repeat last command"}
     },
     q = {
         name = "quit",
@@ -30,22 +28,22 @@ wk.register({
     p = {
         function()
             require("telescope.builtin").find_files {
-                sorter = require 'vscode-files'.get_frecency_sorter(),
-                find_command = { "rg", "--files", "--hidden", "--glob", "!.git" }
+                sorter = require("vscode-files").get_frecency_sorter(),
+                find_command = { "rg", "--files", "--hidden", "--glob", "!.git" },
             }
         end,
         "Telescope files",
     },
-    P = {"<cmd>Mru<cr>", "mru files"},
+    P = { "<cmd>Mru<cr>", "mru files" },
     f = { "<cmd>NvimTreeToggle<CR>", "file tree" },
-    t = {
+    T = {
         name = "tabs", -- optional group name
         c = { "<cmd>tabclose<cr>", "close tab" },
         t = { "<cmd>tabnext<cr>", "next tab" },
         n = { "<cmd>tabnext<cr>", "next tab" },
         p = { "<cmd>tabprev<cr>", "next tab" },
     },
-    T = {
+    t = {
         name = "Telescope",
         g = { "<cmd>Telescope live_grep<cr>", "live_grep" },
         c = { "<cmd>Telescope neoclip<cr>", "neoclip" },
@@ -74,7 +72,7 @@ wk.register({
     },
     u = {
         name = "unittest",
-        t = { "<cmd>TestNearest<cw>" }
+        t = { "<cmd>TestNearest<cw>" },
     },
     x = {
         name = "fix",
@@ -84,13 +82,15 @@ wk.register({
 }, { prefix = "<leader>" })
 
 map("n", "<A-t>", "<CMD>exe v:count1 . 'ToggleTerm'<CR>", opts)
-map("t", "<A-t>", '<C-\\><C-n><CMD>ToggleTerm<CR>', opts)
+map("t", "<A-t>", "<C-\\><C-n><CMD>ToggleTerm<CR>", opts)
 
+-- TODO tabs
 map("n", "<C-Left>", [[<C-W>h]], opts)
 map("n", "<C-Down>", [[<C-W>j]], opts)
 map("n", "<C-Up>", [[<C-W>k]], opts)
 map("n", "<C-Right>", [[<C-W>l]], opts)
 
+-- TODO make textobject
 map("n", "gp", "`[v`]", opts)
 
 map("t", "<C-Left>", [[<C-\><C-n><C-W>h]], opts)
@@ -112,6 +112,5 @@ map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
 map("o", "m", ":<C-U>lua require('tsht').nodes()<CR>", opts)
 map("v", "m", ":lua require('tsht').nodes()<CR>", opts)
 
--- TODO make textobject
 map("n", "<C-p>", '"+p', opts)
-
+map("n", "<C-s>", "<cmd>wa<cr>", { noremap = true })
