@@ -54,14 +54,14 @@ require("nvim-treesitter.configs").setup {
             scope_incremental = "grc",
         },
     },
-        -- refactor = {
-    --     highlight_definitions = { enable = not vscode },
-    --     highlight_current_scope = { enable = false },
-    --     smart_rename = {
-    --         enable = not vscode,
-    --         keymaps = {
-    --             smart_rename = "grr",
-    --         },
-    --     },
-    -- },
+    refactor = {
+        highlight_definitions = { enable = true },
+        highlight_current_scope = { enable = false },
+        smart_rename = {
+            enable = true,
+            keymaps = {
+                smart_rename = "<leader>l<C-r>",
+            },
+        },
+    },
 }

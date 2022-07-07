@@ -43,8 +43,10 @@ vim.cmd [[
     set number
     set termguicolors
     set title
-    colorscheme nightfox
+    colorscheme everforest
     set hidden
+    set autoread
+    set signcolumn=number
     set splitright
     set splitbelow
     set nowrap
@@ -124,7 +126,7 @@ return require("packer").startup(function(raw_use)
         branch = "stable",
         config = function()
             -- todo? mini.fuzzy, mini.surround
-            require("mini.pairs").setup {}
+            -- require("mini.pairs").setup {}
             -- require("mini.sessions").setup {
             --     autoread = true,
             -- }
@@ -168,7 +170,7 @@ return require("packer").startup(function(raw_use)
         run = ":TSUpdate",
         config_mod = "config.treesitter",
     }
-    use "mfussenegger/nvim-ts-hint-textobject"
+    use "mfussenegger/nvim-treehopper"
     use {
         "danymat/neogen",
         config = function()
@@ -185,7 +187,9 @@ return require("packer").startup(function(raw_use)
         end,
         requires = "nvim-treesitter/nvim-treesitter",
     }
-    -- use 'nvim-treesitter/nvim-treesitter-refactor'
+    -- use "vigoux/architext.nvim"
+    use "nvim-treesitter/playground"
+    use 'nvim-treesitter/nvim-treesitter-refactor'
     -- use 'nvim-treesitter/nvim-treesitter-textobjects'
     -- use {
     --   'glepnir/galaxyline.nvim',
@@ -239,16 +243,17 @@ return require("packer").startup(function(raw_use)
     term_use { "saadparwaiz1/cmp_luasnip", after = "LuaSnip" }
     term_use { "hrsh7th/cmp-nvim-lua", after = "nvim-cmp" }
     term_use { "onsails/lspkind-nvim" }
-    -- term_use {"windwp/nvim-autopairs", setup = function()
-    --     require('nvim-autopairs').setup{}
-    --     require 'cmp'.event:on('confirm_done', require 'nvim-autopairs.completion.cmp'.on_confirm_done({  map_char = { tex = '' } }))
-    -- end}
     use {
-        "rcarriga/vim-ultest",
-        requires = { "vim-test/vim-test" },
-        run = ":UpdateRemotePlugins",
+        "windwp/nvim-autopairs",
+        setup = function()
+            vim.cmd "packadd nvim-autopairs"
+            require("nvim-autopairs").setup {}
+            require("cmp").event:on(
+                "confirm_done",
+                require("nvim-autopairs.completion.cmp").on_confirm_done { map_char = { tex = "" } }
+            )
+        end,
     }
-
     term_use {
         "norcalli/nvim-terminal.lua",
         config = [[require("terminal").setup()]],
@@ -270,6 +275,7 @@ return require("packer").startup(function(raw_use)
     }
     term_use {
         "sindrets/diffview.nvim",
+        commit="29006ddd1183c869152adab1b799ac88edca3aee",
         requires = "nvim-lua/plenary.nvim",
         config = function()
             require("diffview").setup {
@@ -372,10 +378,11 @@ return require("packer").startup(function(raw_use)
         end,
         requires = { "tami5/sqlite.lua" },
     }
-    use{ "natecraddock/telescope-zf-native.nvim", 
+    use {
+        "natecraddock/telescope-zf-native.nvim",
         config = function()
-            require("telescope").load_extension("zf-native")
-        end
+            require("telescope").load_extension "zf-native"
+        end,
     }
 
     term_use {
@@ -400,7 +407,7 @@ return require("packer").startup(function(raw_use)
                     null_ls.builtins.formatting.black,
                     null_ls.builtins.diagnostics.mypy,
                     -- null_ls.builtins.diagnostics.editorconfig_checker,
-                    null_ls.builtins.diagnostics.flake8,
+                    -- null_ls.builtins.diagnostics.flake8,
                     -- null_ls.builtins.code_actions.gitsigns,
                     -- null_ls.builtins.code_actions.refactoring,
                     null_ls.builtins.completion.luasnip,
@@ -461,6 +468,7 @@ return require("packer").startup(function(raw_use)
     --     end,
     -- }
     use "EdenEast/nightfox.nvim"
+    use "sainnhe/everforest"
     -- makes prompt etc better
     -- example: vim.ui.select({ "Yes", "No" }, { prompt = '' }, function(choice) end)
     term_use "stevearc/dressing.nvim"
@@ -487,5 +495,13 @@ return require("packer").startup(function(raw_use)
                 },
             }
         end,
+    }
+    use {
+      "nvim-neotest/neotest",
+      requires = {
+        "nvim-lua/plenary.nvim",
+        "nvim-treesitter/nvim-treesitter",
+        "antoinemadec/FixCursorHold.nvim"
+      }
     }
 end)

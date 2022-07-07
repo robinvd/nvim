@@ -18,7 +18,7 @@ wk.register({
             end,
             "quit all terms",
         },
-        r = {'nmap <leader>cr :wa <bar> TermExec cmd="!!" go_back=0<cr', "save all files and repeat last command"}
+        r = {'<cmd>wa <bar> TermExec cmd="!!" go_back=0<cr>', "save all files and repeat last command"}
     },
     q = {
         name = "quit",
@@ -105,6 +105,11 @@ map("n", "]c", "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
 map("n", "[c", "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
 map("n", "]t", "<cmd>lua require('trouble').next({skip_groups = true, jump = true})<cr>", opts)
 map("n", "[t", "<cmd>lua require('trouble').previous({skip_groups = true, jump = true})<cr>", opts)
+
+map("n", "<a-i>", "<cmd>lua require'scope_movements'.up()<cr>", opts)
+map("n", "<a-e>", "<cmd>lua require'scope_movements'.down()<cr>", opts)
+map("n", "<a-n>", "<cmd>lua require'scope_movements'.sibling(0, 'prev')<cr>", opts)
+map("n", "<a-o>", "<cmd>lua require'scope_movements'.sibling(0, 'next')<cr>", opts)
 
 -- Text object
 map("o", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
