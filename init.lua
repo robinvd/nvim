@@ -34,6 +34,36 @@ vim.cmd [[
 
 vim.g.mapleader = " "
 
+-- if vim.fn.executable("kitty") then
+--     vim.g.clipboard = {
+--         name = "kittyclip",
+--         copy = {
+--             ["+"] = {"kitty", "+kitten", "clipboard"},
+--             ["*"] = {"kitty", "+kitten", "clipboard"},
+--         },
+--         paste = {
+--             ["+"] = {"kitty", "+kitten", "clipboard", "--get-clipboard"},
+--             ["*"] = {"kitty", "+kitten", "clipboard", "--get-clipboard"},
+--         }
+--     }
+-- end
+
+function set_title()
+    local hostname = vim.fn.hostname()
+    if hostname == "robin-ThinkPad-E15-Gen-3" then
+        hostname = ""
+    end
+    local path = vim.fn.substitute(vim.fn.getcwd(), os.getenv "HOME", "~", "")
+    if path == "~" then
+        path = vim.fn.substitute(vim.fn.expand "%:p", os.getenv "HOME", "~", "")
+    end
+
+    vim.cmd("set title titlestring=" .. path .. "\\ -\\ NVIM\\ " .. hostname)
+    -- vim.cmd([[ set title titlestring=%{substitute(getcwd(),\\ $HOME,\\ '~',\\ '')}\\ -\\ NVIM\\ ]] .. hostname)
+end
+
+set_title()
+
 vim.cmd [[
     filetype plugin indent on
     set mouse=a
@@ -60,7 +90,9 @@ vim.cmd [[
     set grepformat^=%f:%l:%c:%m
     autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
     autocmd FileType qf nnoremap <buffer> <CR> <CR>:lclose<CR>
+    autocmd BufEnter *.* lua set_title()
     let g:neovide_cursor_animation_length=0
+    let g:textobj_chainmember_no_default_key_mappings = 1
 ]]
 
 return require("packer").startup(function(raw_use)
@@ -95,9 +127,49 @@ return require("packer").startup(function(raw_use)
 
     use "editorconfig/editorconfig-vim"
     use "tpope/vim-repeat"
-    use "tpope/vim-surround"
+    -- use "tpope/vim-surround"
+    use {
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup {
+                -- Configuration here, or leave empty to use defaults
+                keymaps = {
+                    insert = "<C-g>s",
+                    insert_line = "<C-g>S",
+                    normal = "ms",
+                    normal_cur = "mss",
+                    normal_line = "mS",
+                    normal_cur_line = "mSS",
+                    visual = "m",
+                    visual_line = "mS",
+                    delete = "md",
+                    change = "mr",
+                },
+            }
+        end,
+    }
     use "michaeljsmith/vim-indent-object"
-    use "ggandor/lightspeed.nvim"
+    use {
+        "ggandor/leap.nvim",
+        config = function()
+            require("leap").add_default_mappings()
+        end,
+    }
+    use {
+        "ggandor/flit.nvim",
+        config = function()
+            require("flit").setup {
+                keys = { f = "f", F = "F", t = "t", T = "T" },
+                -- A string like "nv", "nvo", "o", etc.
+                labeled_modes = "v",
+                multiline = true,
+                -- Like `leap`s similar argument (call-specific overrides).
+                -- E.g.: opts = { equivalence_classes = {} }
+                opts = {},
+            }
+        end,
+    }
 
     use "kana/vim-textobj-user"
     -- ae/ie
@@ -189,7 +261,7 @@ return require("packer").startup(function(raw_use)
     }
     -- use "vigoux/architext.nvim"
     use "nvim-treesitter/playground"
-    use 'nvim-treesitter/nvim-treesitter-refactor'
+    use "nvim-treesitter/nvim-treesitter-refactor"
     -- use 'nvim-treesitter/nvim-treesitter-textobjects'
     -- use {
     --   'glepnir/galaxyline.nvim',
@@ -231,6 +303,7 @@ return require("packer").startup(function(raw_use)
             }
         end,
     }
+    use { "https://github.com/koka-lang/koka", rtp = "support/vim" }
 
     term_use { "hrsh7th/cmp-nvim-lsp" }
     term_use { "hrsh7th/cmp-buffer", after = "nvim-cmp" }
@@ -275,15 +348,15 @@ return require("packer").startup(function(raw_use)
     }
     term_use {
         "sindrets/diffview.nvim",
-        commit="29006ddd1183c869152adab1b799ac88edca3aee",
+        commit = "29006ddd1183c869152adab1b799ac88edca3aee",
         requires = "nvim-lua/plenary.nvim",
         config = function()
             require("diffview").setup {
-                hooks = {
-                    diff_buf_read = function(_bufnr)
-                        vim.cmd "norm! zRgg]c" -- Set cursor on the first hunk
-                    end,
-                },
+                -- hooks = {
+                --     diff_buf_read = function(_bufnr)
+                --         vim.cmd "norm! zRgg]c" -- Set cursor on the first hunk
+                --     end,
+                -- },
                 key_bindings = {
                     view = {
                         q = "<cmd>tabclose<cr>",
@@ -349,9 +422,18 @@ return require("packer").startup(function(raw_use)
         "numToStr/Comment.nvim",
         config = [[ require('Comment').setup()]],
     }
+    use {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        run = "make",
+        config = function()
+            require("telescope").load_extension "fzf"
+        end,
+    }
     term_use {
         "nvim-telescope/telescope.nvim",
-        requires = { { "nvim-lua/plenary.nvim" } },
+        requires = {
+            { "nvim-lua/plenary.nvim" },
+        },
         config = function()
             require "telescope.actions"
             local trouble = require "trouble.providers.telescope"
@@ -365,6 +447,13 @@ return require("packer").startup(function(raw_use)
                 extensions = {
                     frecency = {
                         -- default_workspace = "CWD"
+                    },
+                    fzf = {
+                        fuzzy = true, -- false will only do exact matching
+                        override_generic_sorter = true, -- override the generic sorter
+                        override_file_sorter = true, -- override the file sorter
+                        case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+                        -- the default case_mode is "smart_case"
                     },
                 },
             }
@@ -407,7 +496,7 @@ return require("packer").startup(function(raw_use)
                     null_ls.builtins.formatting.black,
                     null_ls.builtins.diagnostics.mypy,
                     -- null_ls.builtins.diagnostics.editorconfig_checker,
-                    -- null_ls.builtins.diagnostics.flake8,
+                    null_ls.builtins.diagnostics.flake8,
                     -- null_ls.builtins.code_actions.gitsigns,
                     -- null_ls.builtins.code_actions.refactoring,
                     null_ls.builtins.completion.luasnip,
@@ -496,12 +585,21 @@ return require("packer").startup(function(raw_use)
             }
         end,
     }
-    use {
-      "nvim-neotest/neotest",
-      requires = {
-        "nvim-lua/plenary.nvim",
-        "nvim-treesitter/nvim-treesitter",
-        "antoinemadec/FixCursorHold.nvim"
-      }
-    }
+    -- use {
+    --     "nvim-neotest/neotest",
+    --     requires = {
+    --         "nvim-lua/plenary.nvim",
+    --         "nvim-treesitter/nvim-treesitter",
+    --         "antoinemadec/FixCursorHold.nvim",
+    --         "nvim-neotest/neotest-python",
+    --     },
+    --     setup = function()
+    --         require("neotest").setup({
+    --             adapters = {
+    --                 require("neotest-python")
+    --             }
+    --         })
+    --     end,
+    -- }
+    use { "michaelb/sniprun", run = "bash ./install.sh" }
 end)

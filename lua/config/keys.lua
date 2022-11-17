@@ -18,14 +18,14 @@ wk.register({
             end,
             "quit all terms",
         },
-        r = {'<cmd>wa <bar> TermExec cmd="!!" go_back=0<cr>', "save all files and repeat last command"}
+        r = { '<cmd>wa <bar> TermExec cmd="!!" go_back=0<cr>', "save all files and repeat last command" },
     },
     q = {
         name = "quit",
         q = { "<cmd>xa<cr>", "quit" },
         w = { "<cmd>wa<cr>", "write all" },
     },
-    p = {
+    f = {
         function()
             require("telescope.builtin").find_files {
                 sorter = require("vscode-files").get_frecency_sorter(),
@@ -34,8 +34,9 @@ wk.register({
         end,
         "Telescope files",
     },
+    p = { '"+p', "paste from clipboard" },
     P = { "<cmd>Mru<cr>", "mru files" },
-    f = { "<cmd>NvimTreeToggle<CR>", "file tree" },
+    F = { "<cmd>NvimTreeToggle<CR>", "file tree" },
     T = {
         name = "tabs", -- optional group name
         c = { "<cmd>tabclose<cr>", "close tab" },
@@ -49,6 +50,8 @@ wk.register({
         c = { "<cmd>Telescope neoclip<cr>", "neoclip" },
         n = { "<cmd>Telescope notify<cr>", "notify" },
     },
+    s = { "<cmd>Telescope lsp_document_symbols<cr>", "symbol picker" },
+    S = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "workspace symbols" },
     g = {
         name = "git",
         y = { "copy remote link" },
@@ -81,8 +84,8 @@ wk.register({
     },
 }, { prefix = "<leader>" })
 
-map("n", "<A-t>", "<CMD>exe v:count1 . 'ToggleTerm'<CR>", opts)
-map("t", "<A-t>", "<C-\\><C-n><CMD>ToggleTerm<CR>", opts)
+map("n", "<C-t>", "<CMD>exe v:count1 . 'ToggleTerm'<CR>", opts)
+map("t", "<C-t>", "<C-\\><C-n><CMD>ToggleTerm<CR>", opts)
 
 -- TODO tabs
 map("n", "<C-Left>", [[<C-W>h]], opts)
@@ -115,7 +118,57 @@ map("n", "<a-o>", "<cmd>lua require'scope_movements'.sibling(0, 'next')<cr>", op
 map("o", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
 map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>", {})
 map("o", "m", ":<C-U>lua require('tsht').nodes()<CR>", opts)
-map("v", "m", ":lua require('tsht').nodes()<CR>", opts)
 
 map("n", "<C-p>", '"+p', opts)
 map("n", "<C-s>", "<cmd>wa<cr>", { noremap = true })
+
+vim.cmd [[
+call textobj#user#plugin('line', {
+\   '-': {
+\     'select-a-function': 'CurrentLineA',
+\     'select-a': 'al',
+\     'select-i-function': 'CurrentLineI',
+\     'select-i': 'il',
+\   },
+\ })
+
+function! CurrentLineA()
+  normal! 0
+  let head_pos = getpos('.')
+  normal! $
+  let tail_pos = getpos('.')
+  return ['v', head_pos, tail_pos]
+endfunction
+
+function! CurrentLineI()
+  normal! ^
+  let head_pos = getpos('.')
+  normal! g_
+  let tail_pos = getpos('.')
+  let non_blank_char_exists_p = getline('.')[head_pos[2] - 1] !~# '\s'
+  return
+  \ non_blank_char_exists_p
+  \ ? ['v', head_pos, tail_pos]
+  \ : 0
+endfunction
+]]
+vim.keymap.set({ "x", "o" }, "am", "<Plug>(textobj-chainmember-a)")
+vim.keymap.set({ "x", "o" }, "im", "<Plug>(textobj-chainmember-i)")
+
+-- Other
+map("n", "ga", "<cmd>lua require'markdown'.toggle_markdown_check()<cr>", opts)
+map("v", "<space>y", '"+y', opts)
+map("v", "<space>p", '"+p', opts)
+
+-- Match/surround
+vim.keymap.set("n", "m", "<nop>")
+vim.keymap.set("n", "mm", "%")
+vim.keymap.set("n", "ma", "va")
+vim.keymap.set("n", "mi", "vi")
+--
+-- vim.keymap.set("v", "ms", "S")
+-- vim.keymap.set("n", "md", "ds")
+-- vim.keymap.set("n", "mr", "cs")
+vim.keymap.set({ "n", "v" }, "mt", ":lua require('tsht').nodes()<CR>", opts)
+
+-- insert movement

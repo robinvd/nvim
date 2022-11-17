@@ -34,7 +34,7 @@ map("n", "<leader>lq", "<cmd>lua vim.diagnostic.setloclist()<CR>", opts)
 map("n", "<leader>lf", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 local nvim_lsp = require "lspconfig"
-local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 capabilities.textDocument.completion.completionItem.documentationFormat = { "markdown", "plaintext" }
 capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -71,7 +71,7 @@ local function get_python_path(workspace)
     end
 
     -- Find and use virtualenv in workspace directory.
-    for _, pattern in ipairs { "venv/bin/python" } do
+    for _, pattern in ipairs { "venv/bin/python", "../venv/bin/python" } do
         local python_path = path.join(workspace, pattern)
         local match = vim.fn.glob(python_path)
         if match ~= "" then
